@@ -1,0 +1,129 @@
+﻿
+@model IEnumerable<PlacementDashboard.Models.Student>
+
+@{
+    ViewData["Title"] = "Placement Dashboard";
+}
+
+<div class="dashboard-header">
+    <div>
+        <h1>Placement Dashboard</h1>
+        <p>Student placement overview and records</p>
+    </div>
+    <a asp-action="Create" class="btn btn-primary">+ Add Student</a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card">
+            <span>Total Students</span>
+            <h2>@ViewBag.Total</h2>
+            <small>Registered students</small>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="stat-card">
+            <span>Students Placed</span>
+            <h2>@ViewBag.Placed</h2>
+            <small>Successfully placed</small>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="stat-card">
+            <span>Not Placed</span>
+            <h2>@ViewBag.NotPlaced</h2>
+            <small>Seeking opportunities</small>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="stat-card">
+            <span>Placement Rate</span>
+            <h2>@(((double)ViewBag.Percentage).ToString("0.0"))%</h2>
+            <small>Overall placement</small>
+        </div>
+    </div>
+</div>
+
+<div class="content-card">
+    <div class="table-heading">
+        <h3>Student Placement Records</h3>
+
+        <form asp-action="Index" method="get" class="search-form">
+            <input type="text" name="search"
+                   value="@ViewBag.Search"
+                   placeholder="Search students..."
+                   class="form-control" />
+
+            <button type="submit" class="btn btn-outline-primary">
+                Search
+            </button>
+
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                Reset
+            </a>
+        </form>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Student Name</th>
+                    <th>Department</th>
+                    <th>Company</th>
+                    <th>Package (LPA)</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var student in Model)
+                {
+                    <tr>
+                        <td><strong>@student.Name</strong></td>
+                        <td>@student.Department</td>
+                        <td>@student.Company</td>
+                        <td>@student.Package.ToString("0.0")</td>
+                        <td>
+                            @if (student.Status == "Placed")
+                            {
+                                <span class="status-placed">Placed</span>
+                            }
+                            else
+                            {
+                                <span class="status-notplaced">Not Placed</span>
+                            }
+                        </td>
+                        <td>
+                            <a asp-action="Edit"
+                               asp-route-id="@student.Id"
+                               class="btn btn-sm btn-outline-primary">
+                                Edit
+                            </a>
+
+                            <form asp-action="Delete"
+                                  asp-route-id="@student.Id"
+                                  method="post"
+                                  class="d-inline"
+                                  onsubmit="return confirm('Delete this student?');">
+                                <button type="submit"
+                                        class="btn btn-sm btn-outline-danger">
+                                    Delete
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <p class="text-center p-4">No student records found.</p>
+    }
+</div>
